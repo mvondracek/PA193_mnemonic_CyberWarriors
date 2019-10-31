@@ -11,8 +11,8 @@ See the [changelog](./ChangeLog) file, or the Github releases for specific tags.
  * openssl libcrypto https://www.openssl.org/
 
 ## Download
- * Git tree:   https://github.com/ankurlohchab/bip-39-project
- * Clone with `git clone https://github.com/ankurlohchab/bip-39-project
+ * Git tree:   https://github.com/ankurlohchab/PA193_mnemonic_CyberWarriors
+ * Clone with `git clone https://github.com/ankurlohchab/PA193_mnemonic_CyberWarriors
  
 ## Build
 
