@@ -21,7 +21,7 @@ char HexResult[128];
 
 int main(int argc, char **argv)
 {
-	char *eval, *lval, *mval, *sval=NULL;
+	char *eval = NULL, *lval = NULL, *mval = NULL, *sval = NULL;
 	int command;
 	
 	if (argc == 1)
@@ -255,7 +255,7 @@ void get_root_seed(const char *mnemonic, const char *seed, int l)
 		mnemonic++;
 	}
 	memset(HexResult, 0, 64);
-	salt = strcat(salt, "mnemonic");
+	strncpy(salt, "mnemonic", 9);
         salt = strcat(salt, seed);
         PKCS5_PBKDF2_HMAC(passp, strlen(mnemonic), (const unsigned char *) salt, strlen((const char *) salt), 2048, EVP_sha512(), 64, digest);
 	free(salt);
@@ -314,7 +314,7 @@ void get_entropy_data(char * ent)
 		char c = fgetc(fp);
 		if(c=='\n')
 		{
-			words[j] = (char *)malloc(i*sizeof(char));
+			words[j] = (char *)calloc(i + 1, sizeof(char));
 			strncpy(words[j],buf,i);
 			i=0;
 			j++;
@@ -334,6 +334,10 @@ void get_entropy_data(char * ent)
 		int idx = get_index(words,str);
 		if (idx == -1)
 		{
+			//still need to clean up
+			for (int i = 0; i < LANG_WORD_CNT; ++i) {
+				free(words[i]);
+			}
 			printf("Error in finding index\n");
 			exit(1);
 		}
@@ -363,6 +367,10 @@ void get_entropy_data(char * ent)
 	}
 		
 	printf("\n");
+	
+	for (int i = 0; i < LANG_WORD_CNT; ++i) {
+		free(words[i]);
+	}
 }
 
 
