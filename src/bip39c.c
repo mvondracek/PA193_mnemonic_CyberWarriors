@@ -300,6 +300,7 @@ void get_entropy_data(char * ent)
 	char *words[2048]={0};
 	char buf[50];
 	int i=0,j=0;
+	int c;
 //	char text[]="page dust candy roof off poverty primary risk cushion badge crawl fee";
 	int length = strlen(ent);
 	printf("\n The entropy is\n");
@@ -309,22 +310,54 @@ void get_entropy_data(char * ent)
 		text[i] = *ent;		
 		ent++;
 	}
-	while(!feof(fp))
+	while(1)
 	{
-		char c = fgetc(fp);
-		if(c=='\n')
+		c = fgetc(fp);
+		if(isspace(c) || c==EOF)
 		{
-			words[j] = (char *)calloc(i + 1, sizeof(char));
-			strncpy(words[j],buf,i);
-			i=0;
-			j++;
+			if(i)
+			{
+				//we shouldn't read more than the size of array
+				if(j>=2048)
+				{
+					printf("Wrong format of the dictionary file.\n");
+					for(int k=0;k<j;k++)	free(words[k]);
+					fclose(fp);
+					exit(2);
+				}
+				
+				words[j] = (char *)calloc(i + 1, sizeof(char));
+				if(!words[j])
+				{
+					printf("Memory allocation error\n");
+					for(int k=0;k<j;k++)	free(words[j]);
+					fclose(fp);
+					exit(1);
+				}
+				snprintf(words[j],i,buf);
+				i=0;
+				j++;
+			}
+			if(c==EOF)	break;
 		}
+		else if(isalpha(c))	buf[i++] = c;
 		else
 		{
-			buf[i++] = c;
+			//if some weird character was found in the file
+			printf("Wrong format of the dictionary file.\n");
+			for(int k=0;k<j;k++)	free(words[k]);
+			fclose(fp);
+			exit(2);
 		}
 	}
 	fclose(fp);
+	//we also need to be sure that we read no less than 2048 words
+	if(j<2048)
+	{
+		printf("Wrong format of the dictionary file\n");
+		for(int k=0;k<j;k++)	free(words[j]);
+		exit(2);
+	}
 	
 	char entropy[133]={0};
 	char *str=0;
